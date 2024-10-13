@@ -1,0 +1,24 @@
+on:
+  workflow_dispatch:
+    inputs:
+      link:
+        description: "Youtube video link"
+        required: true
+        default: "https://www.youtube.com/watch?v=2xuJ9TI9oaU"
+name: Get Link
+jobs:
+  get:
+    name: Get Link
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - uses: actions/setup-node@main
+      - run: sudo apt update
+      - run: npm i
+      - run: node dist/cli.js $link > link.txt
+        env:
+          link: ${{ github.event.inputs.link }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: link.txt
+          path: link.txt
