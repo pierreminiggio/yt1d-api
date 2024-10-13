@@ -61,7 +61,31 @@ export default class Yt1dAPI {
 
             const q1080pButtonSelector = 'button[data-fquality="128"][data-ftype="mp4"]'
             await page.waitForSelector(q1080pButtonSelector)
-            await page.click(q1080pButtonSelector)
+
+            let tries = 3
+            let finished: boolean = false
+            let clickError: Error|null = null
+
+            while (tries > 0 && finished === false) {
+                try {
+                    await page.click(q1080pButtonSelector)
+                    finished = true
+                } catch (e: any) {
+                    tries--
+                    clickError = e
+                    await page.waitForTimeout(10000)
+                }
+            }
+
+            if (! finished) {
+                if (! clickError) {
+                    clickError = Error('Error while clicking')
+                }
+                
+                await browser.close()
+                throw clickError
+            }
+            
 
             await page.waitForTimeout(3000)
 

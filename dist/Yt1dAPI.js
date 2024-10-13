@@ -46,7 +46,27 @@ class Yt1dAPI {
             await page.waitForTimeout(3000);
             const q1080pButtonSelector = 'button[data-fquality="128"][data-ftype="mp4"]';
             await page.waitForSelector(q1080pButtonSelector);
-            await page.click(q1080pButtonSelector);
+            let tries = 3;
+            let finished = false;
+            let clickError = null;
+            while (tries > 0 && finished === false) {
+                try {
+                    await page.click(q1080pButtonSelector);
+                    finished = true;
+                }
+                catch (e) {
+                    tries--;
+                    clickError = e;
+                    await page.waitForTimeout(10000);
+                }
+            }
+            if (!finished) {
+                if (!clickError) {
+                    clickError = Error('Error while clicking');
+                }
+                await browser.close();
+                throw clickError;
+            }
             await page.waitForTimeout(3000);
             const downloadNowButtonSelector = '#A_downloadUrl';
             await page.waitForSelector(downloadNowButtonSelector);
