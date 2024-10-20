@@ -45,7 +45,21 @@ class Yt1dAPI {
             });
             await page.waitForTimeout(3000);
             const q1080pButtonSelector = 'button[data-fquality="128"][data-ftype="mp4"]';
-            await page.waitForSelector(q1080pButtonSelector);
+            try {
+                await page.waitForSelector(q1080pButtonSelector, { timeout: 5000 });
+            }
+            catch (e) {
+                // Try clicking again
+                await page.evaluate(() => {
+                    window.scrollTo(0, 200);
+                });
+                await page.waitForTimeout(2000);
+                await page.click(submitButtonSelector);
+                await page.evaluate(() => {
+                    window.scrollTo(0, 700);
+                });
+                await page.waitForSelector(q1080pButtonSelector);
+            }
             let tries = 3;
             let finished = false;
             let clickError = null;
