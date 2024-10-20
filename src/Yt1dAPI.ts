@@ -55,7 +55,7 @@ export default class Yt1dAPI {
 
             await page.evaluate(() => {
                 window.scrollTo(0, 700);
-              });
+            });
 
             await page.waitForTimeout(3000)
 
